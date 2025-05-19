@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Product Page</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    /* Reset & base */
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Montserrat', Arial, sans-serif;
+      margin: 0;
+      background: #f9f9f9;
+      color: #333;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    a {
+      text-decoration: none;
+      color: #0077cc;
+      transition: color 0.3s ease;
+    }
+    a:hover {
+      color: #005fa3;
+    }
+
+    header {
+      position: fixed;
+      top: 0;
+      right: 0;
+      padding: 12px 20px;
+      background: rgba(0,0,0,0.8);
+      color: white;
+      border-radius: 0 0 0 12px;
+      font-size: 15px;
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    header a {
+      background: #fff;
+      color: #000;
+      padding: 4px 10px;
+      border-radius: 15px;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    main.container {
+      max-width: 1200px;
+      margin: 90px auto 40px;
+      padding: 0 20px;
+    }
+
+    /* Product Section */
+    .product-gallery, .product-info {
+      padding: 20px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+    }
+    .product-section {
+      display: flex;
+      gap: 40px;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      margin-bottom: 60px;
+    }
+    .product-gallery {
+      flex: 1 1 400px;
+      max-width: 450px;
+    }
+    .main-image {
+      position: relative;
+      width: 100%;
+      height: 400px;
+      overflow: hidden;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+      cursor: zoom-in;
+      transition: transform 0.3s ease;
+    }
+    .main-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.3s ease;
+      border-radius: 12px;
+    }
+    .main-image:hover img {
+      transform: scale(2);
+    }
+    .thumbnail-gallery {
+      display: flex;
+      gap: 15px;
+      margin-top: 15px;
+      overflow-x: auto;
+      padding-bottom: 10px;
+    }
+    .thumbnail {
+      width: 70px;
+      height: 70px;
+      object-fit: cover;
+      cursor: pointer;
+      border-radius: 8px;
+      border: 2px solid transparent;
+      transition: border-color 0.3s ease;
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .thumbnail.active {
+      border-color: #0077cc;
+    }
+
+    .product-info {
+      flex: 1 1 350px;
+      max-width: 480px;
+      display: flex;
+      flex-direction: column;
+    }
+    .product-info h1 {
+      margin: 0 0 12px 0;
+      font-weight: 700;
+      font-size: 32px;
+      color: #222;
+    }
+    .price {
+      font-weight: 700;
+      font-size: 26px;
+      color: #0077cc;
+      margin-bottom: 20px;
+    }
+
+    .variants {
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+    }
+    .color-options, .size-options, .quantity-options {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    label {
+      font-weight: 600;
+      min-width: 60px;
+      color: #555;
+    }
+    .color-swatch {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 2px solid #ccc;
+      cursor: pointer;
+      transition: border-color 0.3s ease;
+      box-shadow: 0 0 4px rgba(0,0,0,0.1);
+    }
+    .color-swatch.selected {
+      border-color: #0077cc;
+      box-shadow: 0 0 10px #0077cc;
+    }
+    .color-options button#compareColors {
+      padding: 6px 14px;
+      background: #0077cc;
+      border: none;
+      color: white;
+      border-radius: 25px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background-color 0.3s ease;
+    }
+    .color-options button#compareColors:hover {
+      background: #005fa3;
+    }
+
+    select#sizeSelect {
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: 1.5px solid #ccc;
+      font-size: 16px;
+      cursor: pointer;
+      min-width: 100px;
+      transition: border-color 0.3s ease;
+    }
+    select#sizeSelect:hover, select#sizeSelect:focus {
+      border-color: #0077cc;
+      outline: none;
+    }
+    button#sizeChartBtn {
+      padding: 6px 14px;
+      background: #444;
+      border: none;
+      color: white;
+      border-radius: 25px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background-color 0.3s ease;
+    }
+    button#sizeChartBtn:hover {
+      background: #222;
+    }
+
+    input#quantityInput {
+      width: 70px;
+      padding: 6px 10px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 1.5px solid #ccc;
+      text-align: center;
+      transition: border-color 0.3s ease;
+    }
+    input#quantityInput:hover, input#quantityInput:focus {
+      border-color: #0077cc;
+      outline: none;
+    }
+
+    button.add-to-cart {
+      margin-top: 30px;
+      padding: 15px 0;
+      background: #0077cc;
+      border: none;
+      color: white;
+      border-radius: 50px;
+      font-size: 20px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 6px 15px rgba(0,119,204,0.4);
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+      user-select: none;
+    }
+    button.add-to-cart:hover {
+      background: #005fa3;
+      box-shadow: 0 8px 20px rgba(0,95,163,0.6);
+    }
+
+    /* Modals */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1200;
+      left: 0;
+      top: 0;
+      width: 100vw;
+      height: 100vh;
+      overflow-y: auto;
+      background-color: rgba(0,0,0,0.5);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      padding: 40px 20px;
+    }
+    .modal-content {
+      background-color: #fff;
+      margin: auto;
+      padding: 25px 30px;
+      border-radius: 12px;
+      max-width: 500px;
+      box-shadow: 0 12px 35px rgba(0,0,0,0.2);
+      position: relative;
+      animation: fadeInModal 0.3s ease forwards;
+    }
+    @keyframes fadeInModal {
+      from {opacity: 0; transform: translateY(-20px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+    .close-btn {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      font-size: 24px;
+      color: #777;
+      cursor: pointer;
+      transition: color 0.3s ease;
+      font-weight: 700;
+      user-select: none;
+    }
+    .close-btn:hover {
+      color: #000;
+    }
+    .modal-content h2 {
+      margin-top: 0;
+      font-weight: 700;
+      color: #0077cc;
+      margin-bottom: 20px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 16px;
+    }
+    table th, table td {
+      padding: 12px 15px;
+      border-bottom: 1px solid #ddd;
+      text-align: center;
+      color: #444;
+    }
+    table th {
+      background: #f2f6fc;
+      font-weight: 700;
+    }
+    .compare-swatches {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+    .compare-swatches .color-swatch {
+      width: 50px;
+      height: 50px;
+      border-width: 3px;
+      box-shadow: 0 0 12px rgba(0,0,0,0.15);
+    }
+
+    /* New Products Grid */
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 30px;
+      margin-top: 20px;
+    }
+    .product-card {
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+      overflow: hidden;
+      transition: box-shadow 0.3s ease;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      user-select: none;
+    }
+    .product-card:hover {
+      box-shadow: 0 12px 35px rgba(0,0,0,0.15);
+    }
+    .product-card img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      border-bottom: 1px solid #eee;
+      transition: transform 0.3s ease;
+    }
+    .product-card:hover img {
+      transform: scale(1.05);
+    }
+    .product-info-small {
+      padding: 15px 20px;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .product-info-small h3 {
+      margin: 0 0 8px 0;
+      font-weight: 600;
+      font-size: 18px;
+      color: #222;
+    }
+    .product-info-small .price {
+      font-weight: 700;
+      color: #0077cc;
+      font-size: 17px;
+      margin-bottom: 12px;
+    }
+    .product-info-small button {
+      padding: 10px;
+      background: #0077cc;
+      border: none;
+      color: white;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .product-info-small button:hover {
+      background: #005fa3;
+    }
+
+    /* Responsive tweaks */
+    @media (max-width: 900px) {
+      .product-section {
+        flex-direction: column;
+        max-width: 600px;
+        margin: 0 auto 60px;
+      }
+      .product-gallery, .product-info {
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    🛒 Cart: <span id="cartCount">0</span> items
+    <a href="cart.html">View Cart</a>
+  </header>
+
+  <main class="container">
+
+    <!-- Main Product Section -->
+    <section class="product-section">
+      <section class="product-gallery">
+        <div class="main-image">
+          <img id="mainImage" src="assets/product1.jpg" alt="Main Product" />
+        </div>
+        <div class="thumbnail-gallery">
+          <img src="assets/product.jpg" class="thumbnail active" />
+          <img src="assets/product.jpg" class="thumbnail" />
+          <img src="assets/product.jpg" class="thumbnail" />
+          <img src="assets/product.jpg" class="thumbnail" />
+          <img src="assets/product.jpg" class="thumbnail" />
+        </div>
+      </section>
+
+      <section class="product-info">
+        <h1>Classic T-Shirt</h1>
+        <p class="price" id="priceDisplay">$89.99</p>
+
+        <div class="variants">
+          <div class="color-options">
+            <label>Color:</label>
+            <button class="color-swatch selected" data-color="red" style="background:red;"></button>
+            <button class="color-swatch" data-color="blue" style="background:blue;"></button>
+            <button class="color-swatch" data-color="green" style="background:green;"></button>
+            <button id="compareColors">Compare Colours</button>
+          </div>
+
+          <div class="size-options">
+            <label>Size:</label>
+            <select id="sizeSelect">
+              <option value="s">Small</option>
+              <option value="m">Medium</option>
+              <option value="l">Large</option>
+            </select>
+            <button id="sizeChartBtn">Size Chart</button>
+          </div>
+
+          <div class="quantity-options">
+            <label>Quantity:</label>
+            <input type="number" id="quantityInput" value="1" min="1" />
+          </div>
+        </div>
+
+        <button class="add-to-cart" id="addToCartBtn">Add to Cart</button>
+      </section>
+    </section>
+
+    <!-- New Products Grid -->
+    <h2 style="font-weight:700; margin-bottom: 20px; color: #0077cc;">More Products</h2>
+    <div class="products-grid">
+      <div class="product-card" data-name="Vintage Hoodie" data-price="129.99">
+        <img src="assets/product.jpg" alt="Vintage Hoodie" />
+        <div class="product-info-small">
+          <h3>Vintage Hoodie</h3>
+          <p class="price">$129.99</p>
+          <button class="add-to-cart-small">Add to Cart</button>
+        </div>
+      </div>
+
+      <div class="product-card" data-name="Casual Sneakers" data-price="79.99">
+        <img src="assets/product.jpg" alt="Casual Sneakers" />
+        <div class="product-info-small">
+          <h3>Casual Sneakers</h3>
+          <p class="price">$79.99</p>
+          <button class="add-to-cart-small">Add to Cart</button>
+        </div>
+      </div>
+
+      <div class="product-card" data-name="Leather Jacket" data-price="249.99">
+        <img src="assets/product.jpg" alt="Leather Jacket" />
+        <div class="product-info-small">
+          <h3>Leather Jacket</h3>
+          <p class="price">$249.99</p>
+          <button class="add-to-cart-small">Add to Cart</button>
+        </div>
+      </div>
+
+      <div class="product-card" data-name="Denim Jeans" data-price="99.99">
+        <img src="assets/product.jpg" alt="Denim Jeans" />
+        <div class="product-info-small">
+          <h3>Denim Jeans</h3>
+          <p class="price">$99.99</p>
+          <button class="add-to-cart-small">Add to Cart</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="sizeChartModal" class="modal">
+      <div class="modal-content">
+        <span class="close-btn">&times;</span>
+        <h2>Size Chart</h2>
+        <table>
+          <tr><th>Size</th><th>Chest</th><th>Length</th></tr>
+          <tr><td>S</td><td>34"</td><td>26"</td></tr>
+          <tr><td>M</td><td>38"</td><td>28"</td></tr>
+          <tr><td>L</td><td>42"</td><td>30"</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div id="compareModal" class="modal">
+      <div class="modal-content">
+        <span class="close-btn">&times;</span>
+        <h2>Compare Colours</h2>
+        <div class="compare-swatches"></div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const basePrice = 89.99;
+
+    function getCart() {
+      return JSON.parse(localStorage.getItem('cart')) || [];
+    }
+
+    function updateCartUI() {
+      const cart = getCart();
+      let count = 0;
+      for (const item of cart) {
+        const qty = parseInt(item.quantity);
+        if (!isNaN(qty)) count += qty;
+      }
+      document.getElementById('cartCount').textContent = count;
+    }
+
+    function addToCart(item) {
+      const cart = getCart();
+      const existingItem = cart.find(i => i.name === item.name && i.color === item.color && i.size === item.size);
+if (existingItem) {
+existingItem.quantity = (parseInt(existingItem.quantity) + parseInt(item.quantity)).toString();
+} else {
+cart.push(item);
+}
+localStorage.setItem('cart', JSON.stringify(cart));
+updateCartUI();
+alert('${item.quantity} x ${item.name} added to cart!');
+}
+// Main product logic
+const mainImage = document.getElementById('mainImage');
+const thumbnails = document.querySelectorAll('.thumbnail');
+thumbnails.forEach(thumb => {
+  thumb.addEventListener('click', () => {
+    thumbnails.forEach(t => t.classList.remove('active'));
+    thumb.classList.add('active');
+    mainImage.src = thumb.src;
+  });
+});
+
+const colorSwatches = document.querySelectorAll('.color-swatch');
+let selectedColor = 'red';
+colorSwatches.forEach(swatch => {
+  swatch.addEventListener('click', () => {
+    colorSwatches.forEach(s => s.classList.remove('selected'));
+    swatch.classList.add('selected');
+    selectedColor = swatch.dataset.color;
+  });
+});
+
+// Size chart modal
+const sizeChartBtn = document.getElementById('sizeChartBtn');
+const sizeChartModal = document.getElementById('sizeChartModal');
+const sizeChartClose = sizeChartModal.querySelector('.close-btn');
+
+sizeChartBtn.addEventListener('click', () => {
+  sizeChartModal.style.display = 'block';
+});
+sizeChartClose.addEventListener('click', () => {
+  sizeChartModal.style.display = 'none';
+});
+
+// Compare colors modal
+const compareColorsBtn = document.getElementById('compareColors');
+const compareModal = document.getElementById('compareModal');
+const compareClose = compareModal.querySelector('.close-btn');
+const compareSwatchesContainer = compareModal.querySelector('.compare-swatches');
+
+compareColorsBtn.addEventListener('click', () => {
+  compareSwatchesContainer.innerHTML = '';
+  colorSwatches.forEach(swatch => {
+    const clone = swatch.cloneNode(true);
+    clone.classList.remove('selected');
+    clone.style.cursor = 'default';
+    compareSwatchesContainer.appendChild(clone);
+  });
+  compareModal.style.display = 'block';
+});
+compareClose.addEventListener('click', () => {
+  compareModal.style.display = 'none';
+});
+
+// Close modals when clicking outside content
+window.addEventListener('click', (e) => {
+  if (e.target === sizeChartModal) sizeChartModal.style.display = 'none';
+  if (e.target === compareModal) compareModal.style.display = 'none';
+});
+
+// Add to cart main product
+const addToCartBtn = document.getElementById('addToCartBtn');
+addToCartBtn.addEventListener('click', () => {
+  const quantityInput = document.getElementById('quantityInput');
+  const sizeSelect = document.getElementById('sizeSelect');
+  const quantity = parseInt(quantityInput.value);
+  if (isNaN(quantity) || quantity < 1) {
+    alert('Please enter a valid quantity.');
+    return;
+  }
+  const size = sizeSelect.value.toUpperCase();
+  const item = {
+    name: 'Classic T-Shirt',
+    price: basePrice,
+    color: selectedColor,
+    size: size,
+    quantity: quantity.toString()
+  };
+  addToCart(item);
+});
+
+// Add to cart buttons on smaller products
+document.querySelectorAll('.add-to-cart-small').forEach(button => {
+  button.addEventListener('click', (e) => {
+    const card = e.target.closest('.product-card');
+    const name = card.dataset.name;
+    const price = parseFloat(card.dataset.price);
+    const item = {
+      name,
+      price,
+      color: 'default',
+      size: 'M',
+      quantity: '1'
+    };
+    addToCart(item);
+  });
+});
+// Add to cart buttons on smaller products
+document.querySelectorAll('.add-to-cart-small').forEach(button => {
+  button.addEventListener('click', () => {
+    const card = button.closest('.product-card');
+    const name = card.dataset.name;
+    const price = parseFloat(card.dataset.price);
+    const item = {
+      name: name,
+      price: price,
+      color: '',  // no color for these smaller products by default
+      size: '',   // no size for these smaller products by default
+      quantity: '1'
+    };
+    addToCart(item);
+  });
+});
+
+// Initialize cart count on page load
+updateCartUI();
+
+// Initialize cart count on page load
+updateCartUI();
+</script> </body> </html>
